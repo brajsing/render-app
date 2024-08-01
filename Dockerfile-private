@@ -1,0 +1,8 @@
+FROM alpine:latest
+
+# Set Git access token as an environment variable
+ENV GIT_ACCESS_TOKEN=<Give Your Aceses token>
+
+# Install Git and clone private repository
+RUN apk --no-cache add git \
+    && git clone https://<You github username>:${GIT_ACCESS_TOKEN}@github.com<Complete github Url>
