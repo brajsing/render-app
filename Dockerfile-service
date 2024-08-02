@@ -8,22 +8,25 @@ FROM alpine:latest AS repo
 #     && git clone https://<You github username>:${GIT_ACCESS_TOKEN}@github.com<Complete github Url>
 
 # Install Git and clone public repository
+# https://github.com/Ismaestro/angular-example-app.git
+ARG REPO=htest
 RUN apk --no-cache add git \
-    && git clone https://github.com/Ismaestro/angular-example-app.git /repo
+    && git clone $REPO /repo
 
 FROM node:18-alpine AS build
 
+ARG INSTALL_CMD="npm install"
+ARG BUILD_CMD="npm run build"
 WORKDIR /usr/src/app
 
 COPY --from=repo /repo /usr/src/app
 
-RUN npm install -g @angular/cli
+RUN $INSTALL_CMD
 
-RUN npm install
+# RUN $BUILD_CMD
 
-RUN npm run build
+# Expose port 3000
+EXPOSE 3000
 
-# Stage 2, use the compiled app, ready for production with Nginx
-FROM nginx
-COPY --from=build /usr/src/app/dist/ /usr/share/nginx/html
-COPY ./nginx.conf /etc/nginx/conf.d/default.conf
+# Run app
+CMD [ "node", "app/server" ]
